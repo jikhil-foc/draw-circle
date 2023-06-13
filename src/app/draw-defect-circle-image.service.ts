@@ -1,34 +1,22 @@
-import { Component } from '@angular/core';
-import { DrawDefectCircleImageService } from './draw-defect-circle-image.service';
+import { Injectable } from '@angular/core';
 
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+@Injectable({
+  providedIn: 'root',
 })
-export class AppComponent {
-  constructor(private drawDefectService: DrawDefectCircleImageService) {}
-  ngAfterViewInit(): void {
-    const parentDiv = document.createElement('div');
+export class DrawDefectCircleImageService {
+  private width: number = 900;
+  private height: number = 450;
 
-    [1, 2, 3, 4].forEach(() => {
-      const data = this.drawDefectService.generateImage();
-      const imageDiv = document.createElement('img');
-      imageDiv.src = data;
-      document.body.appendChild(imageDiv);
-    });
+  constructor() {}
 
-    document.body.appendChild(parentDiv);
-  }
-
-  generateImage(): void {
+  generateImage() {
     const canvas = document.createElement('canvas');
     canvas.width = 900; // Adjust the dimensions as per your requirements
     canvas.height = 450;
 
     // Get the 2D rendering context
     const ctx: CanvasRenderingContext2D = canvas.getContext('2d')!;
-    this.drawCircle(ctx, canvas, canvas.height);
+    this.drawCircle(ctx, canvas, this.height);
 
     this.drawFillColor(ctx, canvas, 90, 100, 'red');
     this.drawFillColor(ctx, canvas, 100, 130, 'green');
@@ -37,7 +25,7 @@ export class AppComponent {
     this.drawFillColor(ctx, canvas, 210, 230);
     this.drawFillColor(ctx, canvas, 230, 260, 'orange');
     this.drawFillColor(ctx, canvas, 260, 270, 'cyan');
-    this.drawCircle(ctx, canvas, canvas.height - 100);
+    this.drawCircle(ctx, canvas, this.height - 100);
 
     this.drawLine(ctx, canvas, 100);
     this.drawLine(ctx, canvas, 130);
@@ -48,13 +36,10 @@ export class AppComponent {
 
     const dataURL = canvas.toDataURL();
 
-    const imageDiv = document.createElement('img');
-    imageDiv.src = dataURL;
-
-    document.body.appendChild(imageDiv);
+    return dataURL;
   }
 
-  drawCircle(
+  private drawCircle(
     ctx: CanvasRenderingContext2D,
     canvas: HTMLCanvasElement,
     radius: number,
@@ -66,8 +51,8 @@ export class AppComponent {
     ctx.fillStyle = 'white';
     // Draw the half circle
     ctx.beginPath();
-    ctx.arc(canvas.width / 2, canvas.height, radius, 0, Math.PI, true);
-    ctx.lineTo(0, canvas.height);
+    ctx.arc(this.width / 2, this.height, radius, 0, Math.PI, true);
+    ctx.lineTo(0, this.height);
     ctx.closePath();
     // Fill the half circle with white
     ctx.fill();
@@ -75,7 +60,7 @@ export class AppComponent {
     ctx.stroke();
   }
 
-  drawFillColor(
+  private drawFillColor(
     ctx: CanvasRenderingContext2D,
     canvas: HTMLCanvasElement,
     startAngle: number,
@@ -87,11 +72,11 @@ export class AppComponent {
 
     // Draw the filled area between start angle  and end angle
     ctx.beginPath();
-    ctx.moveTo(canvas.width / 2, canvas.height);
+    ctx.moveTo(this.width / 2, this.height);
     ctx.arc(
-      canvas.width / 2,
-      canvas.height,
-      canvas.height,
+      this.width / 2,
+      this.height,
+      this.height,
       ((360 - (startAngle - 90)) * Math.PI) / 180,
       ((360 - (endAngle - 90)) * Math.PI) / 180,
       true
@@ -105,7 +90,7 @@ export class AppComponent {
     ctx.stroke();
   }
 
-  drawLine(
+  private drawLine(
     ctx: CanvasRenderingContext2D,
     canvas: HTMLCanvasElement,
     angle: number,
@@ -115,13 +100,12 @@ export class AppComponent {
     const radiusAngle1 = (angle * Math.PI) / 180;
 
     // Calculate the coordinates for the endpoint of the radius line
-    const endPointX1 =
-      canvas.width / 2 + Math.sin(radiusAngle1) * canvas.height;
-    const endPointY1 = canvas.height + Math.cos(radiusAngle1) * canvas.height;
+    const endPointX1 = this.width / 2 + Math.sin(radiusAngle1) * this.height;
+    const endPointY1 = this.height + Math.cos(radiusAngle1) * this.height;
 
     // Draw the radius line
     ctx.beginPath();
-    ctx.moveTo(canvas.width / 2, canvas.height);
+    ctx.moveTo(this.width / 2, this.height);
     ctx.lineTo(endPointX1, endPointY1);
     ctx.closePath();
 
