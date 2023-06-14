@@ -4,59 +4,56 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class DrawDefectCircleImageService {
-  private width: number = 600;
-  private height: number = 400;
-  private centerX!: number;
-  private centerY!: number;
-
   constructor() {}
 
-  generateImage() {
+  generateCircleImage() {
     const canvas = document.createElement('canvas');
     canvas.width = 900; // Adjust the dimensions as per your requirements
     canvas.height = 600;
+    let imageHeight: number = 400;
 
-    this.centerX = canvas.width / 2;
-    this.centerY = canvas.height - 30;
+    let centerX = canvas.width / 2;
+    let centerY = canvas.height - 30;
 
     // Get the 2D rendering context
     const ctx: CanvasRenderingContext2D = canvas.getContext('2d')!;
-    this.drawCircle(ctx, canvas, this.height);
-    this.drawFillColor(ctx, canvas, 90, 100, 'red');
-    this.drawFillColor(ctx, canvas, 100, 130, 'green');
-    this.drawFillColor(ctx, canvas, 130, 150, 'yellow');
-    this.drawFillColor(ctx, canvas, 150, 210, 'blue');
-    this.drawFillColor(ctx, canvas, 210, 230, 'yellow');
-    this.drawFillColor(ctx, canvas, 230, 260, 'orange');
-    this.drawFillColor(ctx, canvas, 260, 270, 'cyan');
+    this.drawHalfCircle(ctx, imageHeight, centerX, centerY);
+    this.drawFillColor(ctx, 90, 100, centerX, centerY, imageHeight, 'red');
+    this.drawFillColor(ctx, 100, 130, centerX, centerY, imageHeight, 'green');
+    this.drawFillColor(ctx, 130, 150, centerX, centerY, imageHeight, 'yellow');
+    this.drawFillColor(ctx, 150, 210, centerX, centerY, imageHeight, 'blue');
+    this.drawFillColor(ctx, 210, 230, centerX, centerY, imageHeight, 'yellow');
+    this.drawFillColor(ctx, 230, 260, centerX, centerY, imageHeight, 'orange');
+    this.drawFillColor(ctx, 260, 270, centerX, centerY, imageHeight, 'cyan');
 
-    this.drawCircle(ctx, canvas, this.height - 75);
+    this.drawHalfCircle(ctx, imageHeight - 75, centerX, centerY);
 
-    this.drawLine(ctx, canvas, 100);
-    this.drawLine(ctx, canvas, 130);
-    this.drawLine(ctx, canvas, 150);
-    this.drawLine(ctx, canvas, 210);
-    this.drawLine(ctx, canvas, 230);
-    this.drawLine(ctx, canvas, 260);
+    this.drawLine(ctx, 100, centerX, centerY, imageHeight);
+    this.drawLine(ctx, 130, centerX, centerY, imageHeight);
+    this.drawLine(ctx, 150, centerX, centerY, imageHeight);
+    this.drawLine(ctx, 210, centerX, centerY, imageHeight);
+    this.drawLine(ctx, 230, centerX, centerY, imageHeight);
+    this.drawLine(ctx, 260, centerX, centerY, imageHeight);
 
-    this.drawText(ctx, 'Posizione Trasversale', this.centerX, 75, 25);
-    this.drawText(ctx, 'CH', this.centerX, 160, 20);
-    this.drawText(ctx, 'RS1', this.centerX * 0.36, 260, 20);
-    this.drawText(ctx, 'RD1', this.centerX * 1.65, 260, 20);
-    this.drawText(ctx, 'RS', this.centerX * 0.13, 400, 20);
-    this.drawText(ctx, 'RD', this.centerX * 1.86, 400, 20);
-    this.drawText(ctx, 'PS', this.centerX * 0.06, 550, 20);
-    this.drawText(ctx, 'RS', this.centerX * 1.95, 550, 20);
+    this.drawText(ctx, 'Posizione Trasversale', centerX, 75, 25);
+    this.drawText(ctx, 'CH', centerX, 160, 20);
+    this.drawText(ctx, 'RS1', centerX * 0.36, 260, 20);
+    this.drawText(ctx, 'RD1', centerX * 1.65, 260, 20);
+    this.drawText(ctx, 'RS', centerX * 0.13, 400, 20);
+    this.drawText(ctx, 'RD', centerX * 1.86, 400, 20);
+    this.drawText(ctx, 'PS', centerX * 0.06, 550, 20);
+    this.drawText(ctx, 'RS', centerX * 1.95, 550, 20);
 
     const dataURL = canvas.toDataURL();
 
     return dataURL;
   }
 
-  private drawCircle(
+  private drawHalfCircle(
     ctx: CanvasRenderingContext2D,
-    canvas: HTMLCanvasElement,
     radius: number,
+    centerX: number,
+    centerY: number,
     strokeStyleColor: string = 'black'
   ): void {
     // Set the border color
@@ -65,7 +62,7 @@ export class DrawDefectCircleImageService {
     ctx.fillStyle = 'white';
     // Draw the half circle
     ctx.beginPath();
-    ctx.arc(this.centerX, this.centerY, radius, 0, Math.PI, true);
+    ctx.arc(centerX, centerY, radius, 0, Math.PI, true);
 
     ctx.closePath();
     // Fill the half circle with white
@@ -76,9 +73,11 @@ export class DrawDefectCircleImageService {
 
   private drawFillColor(
     ctx: CanvasRenderingContext2D,
-    canvas: HTMLCanvasElement,
     startAngle: number,
     endAngle: number,
+    centerX: number,
+    centerY: number,
+    height: number,
     color: string = 'white'
   ): void {
     // Set the fill color to red
@@ -86,11 +85,11 @@ export class DrawDefectCircleImageService {
 
     // Draw the filled area between start angle  and end angle
     ctx.beginPath();
-    ctx.moveTo(this.centerX, this.centerY);
+    ctx.moveTo(centerX, centerY);
     ctx.arc(
-      this.centerX,
-      this.centerY,
-      this.height,
+      centerX,
+      centerY,
+      height,
       ((360 - (startAngle - 90)) * Math.PI) / 180,
       ((360 - (endAngle - 90)) * Math.PI) / 180,
       true
@@ -106,21 +105,23 @@ export class DrawDefectCircleImageService {
 
   private drawLine(
     ctx: CanvasRenderingContext2D,
-    canvas: HTMLCanvasElement,
     angle: number,
+    centerX: number,
+    centerY: number,
+    height: number,
     strokeStyleColor: string = 'black'
   ) {
     // Calculate the angle for the radius line (30 degrees)
-    const radiusAngle1 = (angle * Math.PI) / 180;
+    const radiusAngle = (angle * Math.PI) / 180;
 
     // Calculate the coordinates for the endpoint of the radius line
-    const endPointX1 = this.centerX + Math.sin(radiusAngle1) * this.height;
-    const endPointY1 = this.centerY + Math.cos(radiusAngle1) * this.height;
+    const endPointX = centerX + Math.sin(radiusAngle) * height;
+    const endPointY = centerY + Math.cos(radiusAngle) * height;
 
     // Draw the radius line
     ctx.beginPath();
-    ctx.moveTo(this.centerX, this.centerY);
-    ctx.lineTo(endPointX1, endPointY1);
+    ctx.moveTo(centerX, centerY);
+    ctx.lineTo(endPointX, endPointY);
     ctx.closePath();
 
     // Set the color for the radius line

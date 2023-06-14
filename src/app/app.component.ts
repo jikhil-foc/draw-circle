@@ -12,7 +12,7 @@ export class AppComponent {
     const parentDiv = document.createElement('div');
 
     [1].forEach(() => {
-      const data = this.drawDefectService.generateImage();
+      const data = this.drawDefectService.generateCircleImage();
       const imageDiv = document.createElement('img');
       imageDiv.src = data;
       document.body.appendChild(imageDiv);
