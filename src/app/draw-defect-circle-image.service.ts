@@ -115,7 +115,25 @@ export class DrawDefectCircleImageService {
       sezioneLongitudinale.PS ? SezioneLongitudinaleColor.PS : undefined
     );
 
+    this.drawHalfCircle(
+      ctx,
+      imageHeight - 30,
+      centerX,
+      centerY,
+      undefined,
+      true
+    );
+
     this.drawHalfCircle(ctx, imageHeight - 75, centerX, centerY);
+
+    this.drawHalfCircle(
+      ctx,
+      imageHeight - 60,
+      centerX,
+      centerY,
+      undefined,
+      true
+    );
 
     this.drawLineInsideCircle(ctx, 100, centerX, centerY, imageHeight);
     this.drawLineInsideCircle(ctx, 130, centerX, centerY, imageHeight);
@@ -131,8 +149,9 @@ export class DrawDefectCircleImageService {
     this.drawText(ctx, 'RS', centerX * 0.13, 400, 20);
     this.drawText(ctx, 'RD', centerX * 1.86, 400, 20);
     this.drawText(ctx, 'PS', centerX * 0.06, 550, 20);
-
     this.drawText(ctx, 'PD', centerX * 1.95, 550, 20);
+
+    this.drawLineInsideCircle(ctx, 180, centerX, centerY, imageHeight, true);
 
     const dataURL = canvas.toDataURL();
 
@@ -177,12 +196,19 @@ export class DrawDefectCircleImageService {
     radius: number,
     centerX: number,
     centerY: number,
-    strokeStyleColor: string = 'black'
+    strokeStyleColor: string = 'black',
+    isTransaparent: boolean = false
   ): void {
     // Set the border color
     ctx.strokeStyle = strokeStyleColor;
-    // Set the fill color
-    ctx.fillStyle = 'white';
+    if (isTransaparent) {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0)';
+      ctx.lineWidth = 0.5;
+    } else {
+      // Set the fill color
+      ctx.fillStyle = 'white';
+      ctx.lineWidth = 2;
+    }
 
     // Draw the half circle
     ctx.beginPath();
@@ -245,10 +271,6 @@ export class DrawDefectCircleImageService {
     const endPointX = centerX + Math.sin(radiusAngle) * height;
     const endPointY = centerY + Math.cos(radiusAngle) * height;
 
-    if (addDottedLine) {
-      ctx.setLineDash([10, 10]); // Set the dash pattern (5 pixels on, 5 pixels off)
-    }
-
     // Draw the radius line
     ctx.beginPath();
     ctx.moveTo(centerX, centerY);
@@ -257,6 +279,13 @@ export class DrawDefectCircleImageService {
 
     // Set the color for the radius line
     ctx.strokeStyle = strokeStyleColor; // Adjust the color as desired
+
+    if (addDottedLine) {
+      ctx.setLineDash([3, 3]); // Array represents the length of dashes and spaces
+      ctx.lineDashOffset = 0; // Optional: offset of the dash pattern
+    } else {
+      ctx.setLineDash([]); // Reset the line dash to solid
+    }
 
     // Draw the border for the radius line
     ctx.stroke();
